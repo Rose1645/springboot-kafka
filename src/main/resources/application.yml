@@ -1,0 +1,87 @@
+server:
+  port: 7004
+  #context-path: /producerApp/api
+  tomcat:
+    uri-encoding: utf-8
+
+spring:
+        messages:
+          encoding: UTF-8
+        http:
+              encoding:
+                force: true
+                charset: utf-8
+                enabled: true
+        datasource:
+                url: jdbc:oracle:thin:@dzzx-db4.hnisi.com.cn:1521:zxjck
+                username: pcs_webdesk
+                password: pcs_webdesk
+                # 使用druid数据源
+                type: com.alibaba.druid.pool.DruidDataSource
+                driver-class-name: oracle.jdbc.driver.OracleDriver
+                filters: stat
+                maxActive: 20
+                initialSize: 1
+                maxWait: 10000
+                minIdle: 1
+                timeBetweenEvictionRunsMillis: 60000
+                minEvictableIdleTimeMillis: 300000
+                validationQuery: select 'x'
+                testWhileIdle: true
+                testOnBorrow: false
+                testOnReturn: false
+                poolPreparedStatements: true
+                maxOpenPreparedStatements: 20
+        jpa:
+            database : oracle
+            show-sql : true
+            hibernate:
+              ddl-auto : none
+#              naming-strategy : org.hibernate.cfg.ImprovedNamingStrategy
+            properties:
+              hibernate:
+#                dialect : org.hibernate.dialect.MySQL5Dialect
+
+
+kafka:
+  producer:
+    servers: 192.168.66.94:9092
+    retries: 0
+    linger: 1
+    buffer:
+      memory: 40960
+    batch:
+      size: 4096
+  consumer:
+      zookeeper:
+        connect: 192.168.66.94:2181
+      servers: 192.168.66.94:9092
+      enable:
+        auto:
+          commit: false
+      session:
+        timeout: 10000
+      group:
+        id: test-3
+      auto:
+        commit:
+          interval: 1000
+        #保证每个组一个消费者消费同一条消息,若设置为earliest，那么会从头开始读partition(none)
+        #earliest 当分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费,新建一个消费者组时会从头消费
+        #latest 当分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据.新建消费者组时，只消费新建时候开始产生的消息
+        offset:
+          reset: earliest
+      concurrency: 10
+
+banner:
+  #charset: utf-8
+
+logging:
+  file: logs/application-debug.log
+#  pattern:
+#    console: "%d %-5level %logger : %msg%n"
+#    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: ERROR
+    com.howtodoinjava: INFO
+    org.hibernate: ERROR
